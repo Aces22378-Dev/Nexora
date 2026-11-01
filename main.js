@@ -1,153 +1,115 @@
+// Nexora website
+// Small interactions only — no framework required.
 
-document.addEventListener("DOMContentLoaded", () => {
-    const navbar = document.getElementById("navbar");
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.getElementById("navLinks");
-    const currentYear = document.getElementById("currentYear");
-    const toast = document.getElementById("toast");
 
-    // Update the footer year.
-    if (currentYear) {
-        currentYear.textContent = new Date().getFullYear();
-    }
+/* Smooth navigation */
 
-    // Navigation bar appearance on scroll.
-    function updateNavbar() {
-        if (!navbar) return;
-        navbar.classList.toggle("scrolled", window.scrollY > 20);
-    }
+document.querySelectorAll('a[href^="#"]').forEach(link => {
 
-    updateNavbar();
-    window.addEventListener("scroll", updateNavbar, { passive: true });
+    link.addEventListener("click", event => {
 
-    // Mobile navigation.
-    function closeMenu() {
-        if (!menuToggle || !navLinks) return;
-
-        navLinks.classList.remove("open");
-        menuToggle.setAttribute("aria-expanded", "false");
-        menuToggle.setAttribute("aria-label", "Open navigation");
-    }
-
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener("click", () => {
-            const isOpen = navLinks.classList.toggle("open");
-
-            menuToggle.setAttribute("aria-expanded", String(isOpen));
-            menuToggle.setAttribute(
-                "aria-label",
-                isOpen ? "Close navigation" : "Open navigation"
-            );
-        });
-
-        navLinks.querySelectorAll("a").forEach((link) => {
-            link.addEventListener("click", closeMenu);
-        });
-
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-                closeMenu();
-            }
-        });
-
-        document.addEventListener("click", (event) => {
-            if (
-                navLinks.classList.contains("open") &&
-                !navLinks.contains(event.target) &&
-                !menuToggle.contains(event.target)
-            ) {
-                closeMenu();
-            }
-        });
-    }
-
-    // Smooth scrolling for internal links.
-    document.querySelectorAll('a[href^="#"]').forEach((link) => {
-        link.addEventListener("click", (event) => {
-            const href = link.getAttribute("href");
-
-            if (!href || href === "#") return;
-
-            const target = document.querySelector(href);
-
-            if (!target) return;
-
-            event.preventDefault();
-
-            target.scrollIntoView({
-                behavior: window.matchMedia(
-                    "(prefers-reduced-motion: reduce)"
-                ).matches ? "auto" : "smooth",
-                block: "start"
-            });
-        });
-    });
-
-    // Highlight the navigation link for the current section.
-    const pageSections = document.querySelectorAll("main section[id]");
-    const sectionLinks = document.querySelectorAll(
-        '.nav-links a[href^="#"]'
-    );
-
-    if ("IntersectionObserver" in window) {
-        const sectionObserver = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (!entry.isIntersecting) return;
-
-                    sectionLinks.forEach((link) => {
-                        const active =
-                            link.getAttribute("href") ===
-                            `#${entry.target.id}`;
-
-                        link.classList.toggle("active", active);
-                    });
-                });
-            },
-            {
-                rootMargin: "-25% 0px -60% 0px",
-                threshold: 0
-            }
+        const target = document.querySelector(
+            link.getAttribute("href")
         );
 
-        pageSections.forEach((section) => {
-            sectionObserver.observe(section);
+        if (!target) return;
+
+        event.preventDefault();
+
+        target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
-    }
 
-    // Small notification helper.
-    let toastTimer;
-
-    function showToast(message) {
-        if (!toast) return;
-
-        toast.textContent = message;
-        toast.classList.add("show");
-
-        clearTimeout(toastTimer);
-
-        toastTimer = setTimeout(() => {
-            toast.classList.remove("show");
-        }, 3000);
-    }
-
-    // Download feedback. The browser still handles the download.
-    document.querySelectorAll(
-        'a[href*="Nexora.exe"]'
-    ).forEach((link) => {
-        link.addEventListener("click", () => {
-            showToast("Opening the Nexora Alpha download...");
-        });
     });
 
-    // Reveal the notification only for external release links.
-    document.querySelectorAll(
-        'a[href*="/releases/tag/Alpha"]'
-    ).forEach((link) => {
-        link.addEventListener("click", () => {
-            showToast("Opening the Nexora Alpha release...");
-        });
-    });
+});
 
-    console.info("Nexora website ready.");
+
+/* Navbar background on scroll */
+
+const navbar = document.querySelector(".navbar");
+
+window.addEventListener("scroll", () => {
+
+    if (window.scrollY > 40) {
+
+        navbar.style.background =
+            "rgba(5, 6, 11, .92)";
+
+    } else {
+
+        navbar.style.background =
+            "rgba(5, 6, 11, .72)";
+
+    }
+
+});
+
+
+/* Reveal sections when they enter the screen */
+
+const revealItems = document.querySelectorAll(
+    ".feature-card, .game-card, .download-card, .release, .nexis-card-large"
+);
+
+const observer = new IntersectionObserver(
+    entries => {
+
+        entries.forEach(entry => {
+
+            if (!entry.isIntersecting) return;
+
+            entry.target.classList.add("revealed");
+
+            observer.unobserve(entry.target);
+
+        });
+
+    },
+    {
+        threshold: 0.12
+    }
+);
+
+
+revealItems.forEach(item => {
+
+    item.style.opacity = "0";
+    item.style.transform = "translateY(18px)";
+    item.style.transition =
+        "opacity .6s ease, transform .6s ease";
+
+    observer.observe(item);
+
+});
+
+
+/* Reveal animation */
+
+const style = document.createElement("style");
+
+style.textContent = `
+    .revealed {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+`;
+
+document.head.appendChild(style);
+
+
+/* Current year */
+
+const yearElements =
+    document.querySelectorAll(".copyright");
+
+yearElements.forEach(element => {
+
+    element.innerHTML =
+        element.innerHTML.replace(
+            "2026",
+            new Date().getFullYear()
+        );
+
 });
