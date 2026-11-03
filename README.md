@@ -17,40 +17,6 @@ Play games, explore the Nexora library, manage your account, customize your prof
 - Player settings
 - Windows `.exe` builds
 
-## Project Structure
-
-```text
-Nexora/
-│
-├── launcher/
-│   ├── main.py
-│   ├── accounts.py
-│   ├── games.py
-│   └── ...
-│
-├── games/
-│   ├── game1/
-│   ├── game2/
-│   └── ...
-│
-├── assets/
-│   ├── images/
-│   ├── sounds/
-│   └── ...
-│
-├── website/
-│   ├── index.html
-│   ├── style.css
-│   └── main.js
-│
-├── build/
-│   ├── Nexora.spec
-│   └── build_exe.bat
-│
-├── requirements.txt
-└── README.md
-```
-
 ## Requirements
 
 Nexora currently requires:
