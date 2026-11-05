@@ -1,0 +1,33 @@
+name: Nexora YT Automation
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min (GitHub often runs these a few minutes late)
+  workflow_dispatch:          # adds a "Run workflow" button for testing
+
+permissions:
+  contents: write             # lets it commit nexora-yt/seen.json
+
+concurrency:
+  group: nexora-yt
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check YouTube for #Nexora
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python3 nexora-yt/check.py
+
+      - name: Save seen list
+        if: always()
+        run: |
+          [ -f nexora-yt/seen.json ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898782+github-actions[bot]@users.noreply.github.com"
+          git add nexora-yt/seen.json
+          git diff --cached --quiet || (git commit -m "Update Nexora YT seen list [skip ci]" && git push)
