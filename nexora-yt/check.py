@@ -87,7 +87,7 @@ def posts():
 
 
 def send(link):
-    body = json.dumps({"content": link}).encode()
+    body = json.dumps({"content": f"New #Nexora upload from Aces!\n{link}"}).encode()
     for _ in range(3):
         req = urllib.request.Request(WEBHOOK, data=body, headers={
             "Content-Type": "application/json",
