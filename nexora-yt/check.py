@@ -11,7 +11,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 HANDLE = "The_Only_Aces"
-TAG = "#nexora"  # matched case-insensitively
+TAG = "-nexora"  # matched case-insensitively
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seen.json")
 WEBHOOK = os.environ.get("DISCORD_WEBHOOK_URL")
 # First run normally just records what already exists so old uploads aren't spammed.
